@@ -1,0 +1,92 @@
+## chatbot order pizza
+chatbot_pizza <- function() {
+  print("Welcome to pizzaworld What would you like to order?")
+
+   ## dataframe pizza
+   id_pizza <- c(1, 2, 3)
+   name_piazza <- c("Classico", "Pepperoni", "Marinara")
+   price_pizza <- c(415, 399, 300)
+   pizza_menu <- data.frame(id_pizza, name_piazza, price_pizza)
+
+  while (TRUE) {
+    print("Please select the pizza menu")
+    print(pizza_menu)
+    print("Enter the number for your order (1-3) Or enter 0 to pass")
+    flush.console()
+    select_pizza <- as.numeric(readline())
+
+
+    if (select_pizza %in% c(1, 2, 3)) {
+      print(paste("Thank you! You ordered", pizza_menu[select_pizza, 2]))
+    } else if (select_pizza == 0) {
+      print("OK!")
+    } else {
+      print("Invalid, please try again")
+    }
+
+    ## dataframe appetizers
+    id_appetiz <- c(1, 2, 3)
+    name_appetiz <- c("soup", "potato", "salad")
+    price_appetiz <- c(89, 79, 109)
+    appetiz_menu <- data.frame(id_appetiz, name_appetiz, price_appetiz)
+
+    print("Please select your appetizers")
+    print(appetiz_menu)
+    print("Enter the number for your order (1-3) Or enter 0 to pass")
+    flush.console()
+    select_appetiz <- as.numeric(readline())
+
+    if (select_appetiz %in% c(1, 2, 3)) {
+      print(paste("Thank you! You ordered", appetiz_menu[select_appetiz, 2]))
+    } else if (select_appetiz == 0) {
+      print("OK!")
+    } else {
+      print("Invalid, please try again")
+    }
+
+    ## dataframe drinks
+    id_drink <- c(1, 2, 3)
+    name_drink <- c("coke", "lemonade", "mineral water")
+    price_drink <- c(25, 35, 20)
+    drink_menu <- data.frame(id_drink, name_drink, price_drink)
+
+    print("Please select your drinks")
+    print(drink_menu)
+    print("Enter the number for your order (1-3) Or enter 0 to pass")
+    flush.console()
+    select_drink <- as.numeric(readline())
+
+    if (select_drink %in% c(1, 2, 3)) {
+      print(paste("Thank you! You ordered", drink_menu[select_drink, 2]))
+    } else if (select_drink == 0) {
+      print("OK!")
+    } else {
+      print("Invalid, please try again")
+    }
+
+    print("Do you want to summarize the order list?")
+    flush.console()
+    confirm <- readline("Type 'yes' to summarize the order, 'no' to return to the list again")
+
+    if (confirm == "no") {
+      print("OK!")
+    } else if (confirm == "yes") {
+      break
+    } else {
+      print("Invalid, please try again")
+    }
+  }
+
+  customer_menu <- c(pizza_menu[select_pizza, 2], appetiz_menu[select_appetiz, 2], drink_menu[select_drink, 2])
+  customer_price <- c(pizza_menu[select_pizza, 3], appetiz_menu[select_appetiz, 3], drink_menu[select_drink, 3])
+  order_customer <- data.frame(customer_menu, customer_price)
+  total_price <- sum(order_customer$customer_price)
+
+  print("Here are all your ordered")
+  print(order_customer)
+  print(paste("Total price is", total_price, "Bath"))
+  print("Thank you! We have received your order already. Please wait a moment")
+}
+
+# Call the function to test
+chatbot_pizza()
