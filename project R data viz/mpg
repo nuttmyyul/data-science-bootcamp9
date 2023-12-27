@@ -1,0 +1,129 @@
+## Explore data
+
+
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+library(patchwork)
+
+head(mpg)
+
+
+
+## 1. Relationship between engine displacement and city miles per gallon
+
+
+A1 <- ggplot(mpg,aes(displ,cty)) + 
+  geom_point(position = "jitter", color="#038cfc") +
+  geom_smooth(method = "loess", se=TRUE) +
+  theme_minimal() +
+  labs(
+    title = "Relationship between engine displacement and city/highway miles per gallon",
+    y = "city miles per gallon",
+    x = "engine displacement, in litres"
+  ) + 
+  coord_cartesian(xlim = c(0,8), ylim = c(0, 45))
+
+A2 <- ggplot(mpg,aes(displ,hwy)) +
+  geom_point(position = "jitter", color="#b573eb") +
+  geom_smooth(method = "loess", se=TRUE) +
+  theme_minimal() + 
+  labs(
+    caption = "Data : mpg",
+    y = "highway miles per gallon",
+    x = "engine displacement, in litres"
+  ) +
+  coord_cartesian(xlim = c(0,8), ylim = c(0, 45))
+
+A1 + A2
+
+
+
+## 2. Type of car manufacturer
+
+
+Y1 <- mpg %>% filter(year==1999)
+Y2 <- mpg %>% filter(year==2008)
+
+A3 <- ggplot(Y1,aes(manufacturer,fill=class)) +
+  geom_bar() +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(
+    title = "Type of car manufacturer : Year 1999"
+  )
+
+A4 <- ggplot(Y2,aes(manufacturer,fill=class)) +
+  geom_bar() +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(
+    title = "Type of car manufacturer : Year 2008"
+  )
+
+A3 / A4
+
+
+
+## 3. Relationship between type of car and engine displacement
+
+
+ggplot(mpg,aes(class,displ,color=class)) +
+  geom_jitter(alpha = 0.5) +
+  geom_point(stat = "summary", fun = "mean", colour = "red", size = 2) +
+  theme_minimal() +
+  labs(
+    title = "Relationship between type of car and engine displacement",
+    caption = "Data : mpg",
+    y = "engine displacement, in litres",
+    x = "type of car"
+  ) 
+
+
+
+## 4.  Relationship between type of drive train and engine displacement
+
+
+ggplot(mpg,aes(drv,displ,fill=drv)) + 
+  geom_boxplot() +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal() +
+  labs(
+    title = "Relationship between type of drive train and engine displacement",
+    caption = "Data : mpg",
+    y = "engine displacement, in litres",
+    x = "the type of drive train" 
+  )
+
+
+
+## 5. The type of car classified by type of drive train
+
+
+ggplot(mpg,aes(class, fill=drv)) +
+  geom_bar() + 
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal() +
+  labs(
+    title = "The type of car classified by type of drive train",
+    caption = "Data : mpg",
+    x = "type of car"
+  )
+
+
+
+## 6. Relationship between number of cylinders and engine displacement
+
+
+ggplot(mpg,aes(cyl,displ,color=hwy)) +
+  geom_point() + 
+  geom_point(stat = "summary", fun = "mean", colour = "red", size = 4) +
+  theme_minimal() +
+  labs(
+    title = "Relationship between number of cylinders and engine displacement",
+    caption = "Data : mpg",
+    y = "engine displacement, in litres",
+    x = "number of cylinders"
+  ) 
