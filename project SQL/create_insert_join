@@ -1,0 +1,88 @@
+CREATE TABLE customers (
+  id INT,
+  name CHAR
+); 
+
+INSERT INTO customers VALUES 
+  (1, 'MINT'),
+  (2, 'JO'),
+  (3, 'Night'),
+  (4, 'Boy'),
+  (5, 'MAY');
+
+
+CREATE TABLE orderdate (
+  id INT,
+  date DATE,
+  staffs CHAR
+);
+
+INSERT INTO orderdate VALUES 
+  (1, '2023-10-01', 'Mark'),
+  (2, '2023-10-02', 'Mark'),
+  (3, '2023-10-03', 'Jane'),
+  (4, '2023-10-04', 'Jane'),
+  (5, '2023-10-04', 'Jane');
+
+--.mode box
+-- select * FROM orderdate
+
+CREATE TABLE customerorder (
+  id INT,
+  menus CHAR,
+  amount INT,
+  payment FLOAT
+);
+
+INSERT INTO customerorder VALUES 
+  (1, 'Pepperoni', 1, 169.0),
+  (2, 'Classic cheese, hawaiian, meat lover', 3, 647.0),
+  (3, 'bbqpizza', 1, 169.0),
+  (4, 'tomato basil, tuna delight', 2, 478.0),
+  (5, 'Pepperoni, coke',2, 198.0);
+
+--.mode box
+--select * from customerorder;
+
+-- JOIN
+.mode box
+SELECT orderdate.date, customers.name , customerorder.menus , customerorder.payment
+FROM customers
+JOIN orderdate ON customers.id = orderdate.id 
+JOIN customerorder ON customerorder.id = orderdate.id; 
+
+-- Aggregate Function
+.mode box
+  SELECT menus, 
+    SUM(amount) AS total_amount, 
+    SUM(payment) AS total_payment
+  FROM customers
+  JOIN orderdate ON customers.id = orderdate.id 
+  JOIN customerorder ON customerorder.id = orderdate.id
+  GROUP BY 1; 
+
+
+--with clauses
+.mode box
+WITH Moreone_order AS
+  (SELECT * FROM customerorder
+  WHERE amount >1),
+  mark_staff AS
+  (SELECT * FROM orderdate
+  WHERE staffs = 'Mark')
+
+SELECT date, menus, payment 
+FROM moreone_order 
+JOIN mark_staff ON moreone_order.id = mark_staff.id;
+
+-- Subquery
+.mode box
+SELECT date, menus, payment
+FROM 
+  (SELECT * FROM customerorder
+  WHERE amount >1) 
+  AS Moreone_order
+JOIN 
+  (SELECT * FROM orderdate
+  WHERE staffs = 'Mark') AS mark_staff
+ON Moreone_order.id = mark_staff.id
