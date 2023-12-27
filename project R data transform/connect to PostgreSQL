@@ -1,0 +1,35 @@
+##connect to PostgreSQL server 
+
+library(RPostgreSQL)
+library(tidyverse)
+library(sqldf)
+library(RSQLite)
+
+## create connection 
+con_pizza <- dbConnect(
+  PostgreSQL(),
+  host = "floppy.db.elephantsql.com",
+  dbname = "iwsnanvr",
+  user = "iwsnanvr",
+  password = "lPdRSW42pr4uaYfx195N1U2rik0miDY4",
+  port = 5432
+)
+
+## test list tables
+dbListTables(con_pizza)
+
+## connect SQLite
+df <- dbConnect(SQLite(), "Pizza_SQL.db")
+
+## get data from df
+order <- dbGetQuery(df, "select * from customerorder")
+customers <- dbGetQuery(df, "select * from customers")
+date <- dbGetQuery(df, "select * from orderdate")
+
+## write table to con_pizza
+dbWriteTable(con_pizza, "order", order)
+dbWriteTable(con_pizza, "customers", customers)
+dbWriteTable(con_pizza, "date", date)
+
+## test list tables in con_pizza
+dbListTables(con_pizza)
