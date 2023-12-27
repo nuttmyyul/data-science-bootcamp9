@@ -1,0 +1,76 @@
+# 6 questions nycflights13 
+
+## nycflights13
+library(nycflights13)
+library(tidyverse)
+
+## load data
+data("flights")
+data("airlines")
+
+## view data
+View(flights)
+View(airlines)
+
+# description
+?flights
+
+## question 1 What are the top 10 airlines with the most flights?
+flights %>% 
+  count(carrier) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  left_join(airlines) 
+
+## add data count of flights for each airline
+n_flights <- flights %>% 
+  count(carrier) %>% 
+  arrange(desc(n)) 
+
+## add data for expand dep_delay
+flights_edit <- flights %>%  
+  mutate(checktime_dep = ifelse(dep_delay==0,"on time", ifelse(dep_delay>0,"late","ahead")))
+checktime_dep <- flights_edit %>% 
+  count(checktime_dep) 
+
+## question 2 Which airlines have the most frequently delayed departures?
+flights_edit %>% 
+  select(carrier,checktime_dep) %>% 
+  filter(checktime_dep == "late") %>% 
+  group_by(carrier) %>% 
+  summarise(dep_late = n()) %>% 
+  left_join(n_flights) %>% 
+  mutate(percent_late = dep_late/n*100) %>% 
+  arrange(desc(percent_late))
+
+## question 3 Which airlines have the most frequently on time departures?
+flights_edit %>% 
+  select(carrier,checktime_dep) %>% 
+  filter(checktime_dep == "on time") %>% 
+  group_by(carrier) %>% 
+  summarise(dep_ontime = n()) %>% 
+  left_join(n_flights) %>% 
+  mutate(percent_ontime = dep_ontime/n*100) %>% 
+  arrange(desc(percent_ontime))
+
+## question 4 Which airlines have the most frequently early departures?
+flights_edit %>% 
+  select(carrier,checktime_dep) %>% 
+  filter(checktime_dep == "ahead") %>% 
+  group_by(carrier) %>% 
+  summarise(dep_ahead = n()) %>% 
+  left_join(n_flights) %>% 
+  mutate(percent_ahead = dep_ahead/n*100) %>% 
+  arrange(desc(percent_ahead))
+
+## question 5 Number of total distances and the average distance of each airline?
+flights_edit %>% 
+  group_by(carrier) %>% 
+  summarise(sum_dist = sum(distance),
+            avg_dist = mean(distance)) 
+
+## question 6 Which airline has the highest average flight distance?
+flights_edit %>% 
+  group_by(carrier) %>% 
+  summarise(avg_dist = mean(distance)) %>% 
+  arrange(desc(avg_dist))
