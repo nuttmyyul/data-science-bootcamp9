@@ -1,0 +1,75 @@
+library(tidyverse)
+library(dplyr)
+
+## correlation
+
+df_hprice <- read.csv("house_price.CSV")
+View(df_hprice)
+
+hprice <- df_hprice %>% 
+  select(price,
+         crime_rate,
+         resid_area,
+         air_qual,
+         room_num,
+         age,
+         teachers,
+         poor_prop,
+         n_hos_beds,
+         n_hot_rooms,
+         rainfall,
+         dist1,
+         dist2,
+         dist3,
+         dist4
+         ) %>% 
+  mutate(avg_dist = (dist1+dist2+dist3+dist4)/4) %>% 
+  mutate(n_hos_beds = replace_na(n_hos_beds,7.900))
+  
+dropna <- df_hprice %>% drop_na() 
+mean(dropna$n_hos_beds)
+# mean : n_hos_beds = 7.899767
+
+
+hprice $dist1 <- NULL
+hprice $dist2 <- NULL
+hprice $dist3 <- NULL
+hprice $dist4 <- NULL
+
+cor(hprice)
+cor.test(hprice$air_qual,hprice$price)
+## room_num มีcorrelationเชิงบวก  0.70 sig ที่ 95%
+## poor_prop มี correlationเชิงลบ 0.74 sig ที่ 95%
+
+## linear regression 
+lmprice <- lm(price ~ room_num + poor_prop, data = hprice)
+coefs <- coef(lmprice)
+
+## แทนค่าตัวแปรในสมการ regression
+coefs[[1]]+coefs[[2]]*5+coefs[[3]]*8
+
+## build full model
+lmprice_Full <- lm(price ~ ., data = hprice) #ทุกตัวแปรต้นใช้ทำนาย
+hprice$predicted <- predict(lmprice)
+
+## train RMSE
+squared_error <- (hprice$price - hprice$predicted) ** 2 #errorยกกำลัง2
+(rmse <- sqrt(mean(squared_error)))
+
+
+## spit data
+set.seed(42)
+n <- nrow(hprice)
+id <- sample(1:n, size = n*0.7)
+train_data <- hprice[id, ]
+test_data <- hprice[-id, ]
+
+## train Model
+model1 <- lm(price ~ ., data = train_data)
+p_train <- predict(model1)
+(rmse <- sqrt(mean((train_data$price - p_train)**2)))
+
+## test model 
+p_test <- predict(model1, newdata = test_data)
+error_test <- test_data$price - p_test
+(rmse_test <- sqrt(mean(error_test **2)))
